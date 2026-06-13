@@ -1,0 +1,7 @@
+[submodule "cc-slave"]
+	path = cc-slave
+	url = https://github.com/mod-audio/cc-slave.git
+[submodule "mod-controller-proto"]
+	path = mod-controller-proto
+	url = https://github.com/sejerpz/mod-controller-proto.git
+	branch = features/builder
