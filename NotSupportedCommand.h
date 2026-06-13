@@ -5,8 +5,8 @@
 class NotSupportedCommand : public Command
 {
 public:
-  NotSupportedCommand(void)
-  : Command("NotSupported")
+  NotSupportedCommand(ISerial &serial)
+  : Command("NotSupported", serial)
   {
 
   }

@@ -4,6 +4,9 @@
 class Control
 {
 public:
+  typedef std::map<int, Control *>            ControlMap;
+  typedef std::map<int, Control *>::iterator  ControlMapIter;
+
   Control(Tokenizer::TokenVector &tokens)
   {
     m_nHwId       = static_cast<int>        (tokens[1]);
@@ -16,6 +19,11 @@ public:
     m_fSteps      = static_cast<float>      (tokens[8]);
   }
 
+  int GetHwID(void)
+  {
+    return m_nHwId;
+  }
+  
 private:
   int           m_nHwId;
   std::string   m_sLabel;

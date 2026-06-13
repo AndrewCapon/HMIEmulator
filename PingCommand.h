@@ -5,8 +5,8 @@
 class PingCommand : public Command
 {
 public:
-  PingCommand()
-  : Command("pi")
+  PingCommand(ISerial &serial)
+  : Command("pi", serial)
   {
 
   }

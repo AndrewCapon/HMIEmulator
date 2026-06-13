@@ -5,7 +5,7 @@
 #include <map>
 
 #include "Tokenizer.h"
-#include "Serial.h"
+#include "ISerial.h"
 
 
 class Command
@@ -14,8 +14,9 @@ public:
   typedef std::map<std::string, Command *>            CommandMap;
   typedef std::map<std::string, Command *>::iterator  CommandMapIter;
   
-  Command(std::string sCommandName)
-  : m_sCommandName(sCommandName)
+  Command(std::string sCommandName, ISerial &serial)
+  : m_sCommandName(sCommandName),
+    m_serial(serial)
   {
 
   }
@@ -31,10 +32,11 @@ protected:
   void SendResponse(void)
   {
     char buffer[20] = "r 0";
-    Serial::Write(buffer, 20);
+    m_serial.Write(buffer, 20);
     printf("  Response : %s\n", buffer);
   }
 
 private:
   std::string m_sCommandName;  
+  ISerial     &m_serial;
 };

@@ -15,18 +15,22 @@
 
 #include "mod-protocol.h"
 
-#include "Serial.h"
+#include "SerialTNT3.h"
 #include "Command.h"
+#include "CommandCollection.h"
+#include "ControlCollection.h"
 #include "AddCommand.h"
 #include "NotSupportedCommand.h"
 #include "PingCommand.h"
 
-// serial port
+SerialTNT3 serial;
 
-Command::CommandMap commandMap;
-NotSupportedCommand   notSupportedCommand;
-AddCommand            addCommand;
-PingCommand           pingCommand;
+CommandCollection     commandCollection;
+ControlCollection     controlCollection;
+
+NotSupportedCommand   notSupportedCommand(serial);
+AddCommand            addCommand(serial, controlCollection);
+PingCommand           pingCommand(serial);
 
 void HandleMessage(const char *pszMessage)
 {
@@ -36,10 +40,9 @@ void HandleMessage(const char *pszMessage)
 
   if(tokens.size())
   {
-    Command::CommandMapIter i = commandMap.find(tokens[0]);
-
-    if(i != commandMap.end())
-      i->second->Process(tokens);
+    Command *pFoundCommand = commandCollection.Find(tokens[0]);
+    if(pFoundCommand)
+      pFoundCommand->Process(tokens);
     else
       notSupportedCommand.Process(tokens);
   }
@@ -51,29 +54,24 @@ int main(int, char**)
   printf("===========\n\n");
 
   printf("Initialising serial\n");
-  if(!Serial::Initialise())
+  if(!serial.IsInitialised())
   {
-    printf("Serial port failed to inititalise\n");
+    printf("Serial port failed to initialise\n");
     return 1;
   }
 
-  
-  commandMap[notSupportedCommand.CommandName()] = &notSupportedCommand;
-  commandMap[addCommand.CommandName()] = &addCommand;
-  commandMap[pingCommand.CommandName()] = &pingCommand;
+  commandCollection.Add(&notSupportedCommand);
+  commandCollection.Add(&addCommand);
+  commandCollection.Add(&pingCommand);
 
   while(true)
   {
     // Handle serial input
     char buffer[2048];
-    int n = Serial::Read(buffer, 2048);
+    int n = serial.Read(buffer, 2048);
     if(n>0)
-    {
       HandleMessage(buffer);
-    }
   }
-
-  Serial::Close();
 }
 
 
