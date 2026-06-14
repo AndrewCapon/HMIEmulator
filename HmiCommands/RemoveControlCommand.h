@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Command.h"
+#include "HmiCommand.h"
 #include "Control.h"
 #include "ControlCollection.h"
 
-class RemoveControlCommand : public Command
+class RemoveControlCommand : public HmiCommand
 {
 public:
   RemoveControlCommand(ISerial &serial, ControlCollection &controlCollection)
-  : Command("d", serial),
+  : HmiCommand("d", serial),
     m_controlCollection(controlCollection)
   {
 
@@ -16,7 +16,7 @@ public:
 
   bool Process(Tokenizer::TokenVector tokens)
   {
-    printf(" AddCommand\n");
+    printf("[HMI] AddCommand\n");
     m_controlCollection.Remove(static_cast<int>(tokens[1]));
     SendResponse();
     return true;

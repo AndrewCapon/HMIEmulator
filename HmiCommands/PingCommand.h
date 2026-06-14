@@ -1,19 +1,21 @@
 #pragma once
 
-#include "Command.h"
+#include "HmiCommand.h"
 
-class PingCommand : public Command
+class PingCommand : public HmiCommand
 {
 public:
   PingCommand(ISerial &serial)
-  : Command("pi", serial)
+  : HmiCommand("pi", serial)
   {
 
   }
 
   bool Process(Tokenizer::TokenVector tokens)
   {
-    printf(" PingCommand\n");
+    if(!m_bSilent)
+      printf("[HMI] PingCommand\n");
+      
     SendResponse();
 
     return true;

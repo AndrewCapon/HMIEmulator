@@ -36,6 +36,18 @@ public:
       return nullptr;
   }
 
+  size_t Count(void)
+  {
+    return m_controls.size();
+  }
+
+  void DebugDump(void)
+  {
+    for(Control::ControlMapIter i = m_controls.begin(); i != m_controls.end(); i++)
+    {
+      i->second->DebugDump();
+    }
+  }
 private:
   Control::ControlMap  m_controls;
 };

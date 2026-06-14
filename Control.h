@@ -29,11 +29,21 @@ public:
     m_fValue = fValue;
   }
 
+  float GetValue(void)
+  {
+    return m_fValue;
+  }
+
   std::string GetLabel(void)
   {
     return m_sLabel;
   }
   
+  void DebugDump(void)
+  {
+    printf("[UI] Control[%d] : %s, %d, %s, %f, %f, %f, %f\n", m_nHwId, m_sLabel.c_str(), m_nProperties, m_sUnit.c_str(), m_fValue, m_fMin, m_fMax, m_fSteps);
+  }
+
 private:
   int           m_nHwId;
   std::string   m_sLabel;
