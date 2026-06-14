@@ -7,12 +7,12 @@
 
 #include "ISerial.h"
 
-class SerialTNT3 : public ISerial
+class SerialLinuxDev : public ISerial
 {
 public:
-  SerialTNT3(void)
+  SerialLinuxDev(const char *pszDeviceName)
   {
-    m_nSerialPort= open("/dev/tnt3", O_RDWR);
+    m_nSerialPort= open(pszDeviceName, O_RDWR);
 
     // Check for errors
     if(IsInitialised())
@@ -41,7 +41,7 @@ public:
     }
   }
 
-  ~SerialTNT3(void)
+  ~SerialLinuxDev(void)
   {
     if(IsInitialised())
       close(m_nSerialPort);

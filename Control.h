@@ -41,7 +41,7 @@ public:
   
   void DebugDump(void)
   {
-    printf("[UI] Control[%d] : %s, %d, %s, %f, %f, %f, %f\n", m_nHwId, m_sLabel.c_str(), m_nProperties, m_sUnit.c_str(), m_fValue, m_fMin, m_fMax, m_fSteps);
+    printf("[HMI] Control[%d] : %s, %d, %s, %f, %f, %f, %f\n", m_nHwId, m_sLabel.c_str(), m_nProperties, m_sUnit.c_str(), m_fValue, m_fMin, m_fMax, m_fSteps);
   }
 
 private:
