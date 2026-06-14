@@ -4,10 +4,10 @@
 #include "Control.h"
 #include "ControlCollection.h"
 
-class AddCommand : public Command
+class AddControlCommand : public Command
 {
 public:
-  AddCommand(ISerial &serial, ControlCollection &controlCollection)
+  AddControlCommand(ISerial &serial, ControlCollection &controlCollection)
   : Command("a", serial),
     m_controlCollection(controlCollection)
   {

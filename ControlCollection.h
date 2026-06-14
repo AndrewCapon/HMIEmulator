@@ -15,6 +15,17 @@ public:
     m_controls[pControl->GetHwID()] = pControl;
   }
 
+  void Remove(int nHwId)
+  {
+   Control::ControlMapIter i = m_controls.find(nHwId);
+
+    if(i != m_controls.end())
+    {
+      m_controls.erase(i);
+      delete i->second;
+    }
+  }
+
   Control *Find(int nHwId)
   {
     Control::ControlMapIter i = m_controls.find(nHwId);

@@ -23,6 +23,16 @@ public:
   {
     return m_nHwId;
   }
+
+  void SetValue(float fValue)
+  {
+    m_fValue = fValue;
+  }
+
+  std::string GetLabel(void)
+  {
+    return m_sLabel;
+  }
   
 private:
   int           m_nHwId;
