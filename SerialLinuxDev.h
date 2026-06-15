@@ -49,7 +49,10 @@ public:
    
   size_t Write(char *pBuffer, size_t uSize)
   {
-    return write(m_nSerialPort, pBuffer, uSize);
+    size_t count = write(m_nSerialPort, pBuffer, uSize);
+    fsync(m_nSerialPort);
+
+    return count;
   }
 
   size_t Read(char *pBuffer, size_t uSize)

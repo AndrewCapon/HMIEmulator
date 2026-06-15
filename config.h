@@ -17,6 +17,9 @@
 #define CC_UPDATES_FIFO_SIZE    20
 
 // disable string support
-#define CC_STRING_NOT_SUPPORTED
+//#define CC_STRING_NOT_SUPPORTED
 
 #endif
+
+
+
