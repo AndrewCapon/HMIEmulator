@@ -29,7 +29,7 @@ mod-ui needs two env vars set:
 Using version 0.6 which is the same as the mod footswitch.
 
 You need to edit `utils.c` to fix what looks to be pretty dodgy code to me, I could be wrong though!
-The code is still quite dodgy but won't crash till you get to OPTIONS_MAX_ITEMS where it was crashing if you had more than on list based control mapped.
+The code is still quite dodgy but won't crash till you get to OPTIONS_MAX_ITEMS where it was crashing if you had more than one list based control mapped.
 
 ```
 option_t **options_list_create(uint8_t items_count)
