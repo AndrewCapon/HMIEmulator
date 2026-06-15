@@ -16,7 +16,7 @@ The code currently is set up for 4 momentary switches and variable controls.
 
 ## Setup for HMI
 
-cod listens on /dev/tnt3 for HMI serial
+code listens on /dev/tnt3 for HMI serial
 
 mod-ui needs two env vars set:
 `MOD_HMI_SERIAL_PORT=/dev/tnt2`
@@ -29,7 +29,7 @@ mod-ui needs two env vars set:
 Using version 0.6 which is the same as the mod footswitch.
 
 You need to edit `utils.c` to fix what looks to be pretty dodgy code to me, I could be wrong though!
-The code is still quite dodgy but won't crash till you get to OPTIONS_MAX_ITEMS!
+The code is still quite dodgy but won't crash till you get to OPTIONS_MAX_ITEMS where it was crashing if you had more than on list based control mapped.
 
 ```
 option_t **options_list_create(uint8_t items_count)
