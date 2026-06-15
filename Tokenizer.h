@@ -70,7 +70,9 @@ namespace Tokenizer
         while(strToken2.back()!= '"' && getline(ss, strToken2, delimiter))
           strToken += " " + strToken2;
       }
-      vector.push_back(Token(strToken)); 
+      
+      if(strToken[0] !='\n')
+        vector.push_back(Token(strToken)); 
     } 
   
     return vector; 

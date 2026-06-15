@@ -53,16 +53,17 @@ public:
 
   void ListControls(void)
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    printf("[HMI] ListControls count = %lu\n", m_controlCollection.Count());
 
-    printf("[HMI] Control count = %lu\n", m_controlCollection.Count());
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_controlCollection.DebugDump();
   }
 
   void SetControlValue(int nHwId, float fValue)
   {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    printf("[HMI] SetControlValue(%d, %f)\n", nHwId, fValue);
 
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_setControlValueCommand.Send(nHwId, fValue);
   }
 

@@ -10,11 +10,12 @@ Hmi           hmi;
 void DisplayHelp(void)
 {
   printf("Console commands (need newline, n=int, f=float):\n");
-  printf("  h      : Display help.\n");
-  printf("  hv     : HMI verbose switch (unsupported commands and pings).\n");
-  printf("  hl     : HMI List controls.\n");
-  printf("  hs n f : HMI Set control n to f.\n\n");
-  printf("  cl     : CC  List controls.\n");
+  printf("  <empty> : Display help.\n");
+  printf("  hv      : HMI verbose switch (unsupported commands and pings).\n");
+  printf("  hl      : HMI List controls.\n");
+  printf("  hs n f  : HMI Set control n to f.\n\n");
+  printf("  cl      : CC  List controls.\n");
+  printf("  cs n f  : CC  Set actuator n to f.\n\n");
 }
 
 void HandleUI(void)
@@ -31,11 +32,9 @@ void HandleUI(void)
     {
       std::string sCommand = tokens[0];
 
-      if(sCommand[0] == 'h')
+      if(sCommand.length() >= 1)
       {
-        if(sCommand.length() == 2)
-          DisplayHelp();
-        else if (sCommand.length() == 3)
+        if(sCommand[0] == 'h')
         {
           // Hmi commands
           switch (sCommand[1])
@@ -67,33 +66,35 @@ void HandleUI(void)
             }
           }
         }
-      }
-      else if (sCommand[0] == 'c')
-      {
-        // CC commands
-        switch (sCommand[1])
+        else if (sCommand[0] == 'c')
         {
-          // list controls
-          case 'l' :
+          // CC commands
+          switch (sCommand[1])
           {
-            ControlChain::ListControls();
-            break;
-          }
+            // list controls
+            case 'l' :
+            {
+              ControlChain::ListControls();
+              break;
+            }
 
-          // set Control
-          case 's' :
-          {
-            // if(uTokens == 3)
-            // {
-            //   int   nHwId  = tokens[1];
-            //   float fValue = tokens[2];
-            //   hmi.SetControlValue(nHwId, fValue);
-            // }
-            break;
+            // set Control
+            case 's' :
+            {
+              if(uTokens == 3)
+              {
+                int   nActuatorId  = tokens[1];
+                float fValue = tokens[2];
+                ControlChain::SetControlValue(nActuatorId, fValue);
+              }
+              break;
+            }
           }
         }
       }
     }
+    else
+      DisplayHelp();
   }
 }
 

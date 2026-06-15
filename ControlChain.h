@@ -64,24 +64,23 @@ namespace ControlChain
 
   void DisplayAssignment(const char *pszLabel, cc_assignment_t *pAssignment)
   {
-    printf("[CC] %s\n", pszLabel);
-    printf("[CC]   id          : %d\n", pAssignment->id);
-    printf("[CC]   actuator_id : %d\n", pAssignment->actuator_id);
-    printf("[CC]   value       : %f\n", pAssignment->value);
-    printf("[CC]   min         : %f\n", pAssignment->min);
-    printf("[CC]   max         : %f\n", pAssignment->max);
-    printf("[CC]   def         : %f\n", pAssignment->def);
-    printf("[CC]   mode        : %x\n", pAssignment->mode);
-    printf("[CC]   steps       : %u\n", pAssignment->steps);
-    printf("[CC]   list_count  : %u\n", pAssignment->steps);
+    printf("[CC]  %s\n", pszLabel);
+    printf("[CC]    id          : %d\n", pAssignment->id);
+    printf("[CC]    actuator_id : %d\n", pAssignment->actuator_id);
+    printf("[CC]    value       : %f\n", pAssignment->value);
+    printf("[CC]    min         : %f\n", pAssignment->min);
+    printf("[CC]    max         : %f\n", pAssignment->max);
+    printf("[CC]    def         : %f\n", pAssignment->def);
+    printf("[CC]    mode        : %x\n", pAssignment->mode);
+    printf("[CC]    steps       : %u\n", pAssignment->steps);
+    printf("[CC]    list_count  : %u\n", pAssignment->steps);
   #ifndef CC_STRING_NOT_SUPPORTED
-    printf("[CC]   label       : %s\n", str16ToCstr(pAssignment->label));
-    printf("[CC]   unit        : %s\n", str16ToCstr(pAssignment->unit));
+    printf("[CC]    label       : %s\n", str16ToCstr(pAssignment->label));
+    printf("[CC]    unit        : %s\n", str16ToCstr(pAssignment->unit));
     
     // TODO
       // uint8_t list_index;
       // option_t **list_items;
-      // str16_t label, unit;
   #endif
   }
 
@@ -234,7 +233,7 @@ namespace ControlChain
       actuator_config.name = sName;
       actuator_config.value = &variableValues[i];
       actuator_config.min = 0.0;
-      actuator_config.max = 1023.0;
+      actuator_config.max = 1.0;
       actuator_config.supported_modes = CC_MODE_REAL | CC_MODE_INTEGER;
       actuator_config.max_assignments = 1;
 
@@ -252,6 +251,8 @@ namespace ControlChain
 
   void ListControls(void)
   {
+    printf("[CC]  ListControls\n");
+    std::lock_guard<std::mutex> lock(m_mutex);
     for(uint32_t uActuator = 0; uActuator < (buttonPortsCount+variablePortsCount); uActuator++)
     {
       Actuator &act = actuators[uActuator];
@@ -260,6 +261,13 @@ namespace ControlChain
         DisplayAssignment(str16ToCstr(act.pActuator->name), act.pAssignment);
       }
     }
+  }
+
+  void SetControlValue(int nActuatorId, float fValue)
+  {
+    printf("[CC]  SetControlValue(%d, %f)\n", nActuatorId, fValue);
+    std::lock_guard<std::mutex> lock(m_mutex);
+    *(actuators[nActuatorId].pActuator->value) = fValue;
   }
 
   void ThreadHandler(void)
