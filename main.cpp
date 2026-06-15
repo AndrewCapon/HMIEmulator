@@ -16,6 +16,7 @@ void DisplayHelp(void)
   printf("  hs n f  : HMI Set control n to f.\n\n");
   printf("  cl      : CC  List controls.\n");
   printf("  cs n f  : CC  Set actuator n to f.\n\n");
+  printf("  ct n    : CC  Toggle actuator n from 1 to 0.\n\n");
 }
 
 void HandleUI(void)
@@ -89,6 +90,19 @@ void HandleUI(void)
               }
               break;
             }
+
+            // toggle Control
+            case 't' :
+            {
+              if(uTokens == 2)
+              {
+                int   nActuatorId  = tokens[1];
+                ControlChain::SetControlValue(nActuatorId, 1);
+                ControlChain::SetControlValue(nActuatorId, 0);
+              }
+              break;
+            }
+
           }
         }
       }

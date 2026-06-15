@@ -1,31 +1,9 @@
 #pragma once
 
-// #include <stdio.h>
-// #include <unistd.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <fcntl.h> 
-// #include <errno.h> 
-// #include <termios.h> 
-// #include <sys/ioctl.h>
-// #include <stdint.h>
-
 #include <thread>
 #include <mutex>
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h> 
-#include <errno.h> 
-#include <termios.h> 
-#include <sys/ioctl.h>
-#include <stdint.h>
-#include <time.h>
-#include <signal.h>
 
-#include <assert.h>
 #include "control_chain.h"
 #include "SerialLinuxDev.h"
 
@@ -37,9 +15,13 @@ namespace ControlChain
   bool                    m_bVerbose = false;
   std::thread             m_thread;
 
-    // Actuators
-  #define buttonPortsCount 8
-  #define variablePortsCount 8
+  // Actuators 
+  // looks like switches and discrete have never been implemented properly look at update_assignment_value()
+  #define continuousActuatorCount  4
+  #define discreteActuatorCount    0
+  #define momentaryActuatorCount   4
+  #define switchActuatorCount      0
+  #define TotalActuatorCount       (continuousActuatorCount + discreteActuatorCount + momentaryActuatorCount + switchActuatorCount)
 
   struct Actuator
   {
@@ -48,9 +30,12 @@ namespace ControlChain
       float               fSetValue=0.0f;
   };
 
-  float     buttonValues[buttonPortsCount];
-  float     variableValues[variablePortsCount];
-  Actuator  actuators[buttonPortsCount+variablePortsCount];
+  float     continuousValues[continuousActuatorCount];
+  float     discreteValues[discreteActuatorCount];
+  float     momentaryValues[momentaryActuatorCount];
+  float     switchValues[switchActuatorCount];
+
+  Actuator  actuators[TotalActuatorCount];
   int       nActuatorCount = 0;
 
   char *str16ToCstr(str16_t str16)
@@ -62,26 +47,64 @@ namespace ControlChain
     return buffer;
   }
 
-  void DisplayAssignment(const char *pszLabel, cc_assignment_t *pAssignment)
+  char *modeToCstr(uint32_t uMode)
   {
-    printf("[CC]  %s\n", pszLabel);
-    printf("[CC]    id          : %d\n", pAssignment->id);
-    printf("[CC]    actuator_id : %d\n", pAssignment->actuator_id);
-    printf("[CC]    value       : %f\n", pAssignment->value);
-    printf("[CC]    min         : %f\n", pAssignment->min);
-    printf("[CC]    max         : %f\n", pAssignment->max);
-    printf("[CC]    def         : %f\n", pAssignment->def);
-    printf("[CC]    mode        : %x\n", pAssignment->mode);
-    printf("[CC]    steps       : %u\n", pAssignment->steps);
-    printf("[CC]    list_count  : %u\n", pAssignment->steps);
-  #ifndef CC_STRING_NOT_SUPPORTED
-    printf("[CC]    label       : %s\n", str16ToCstr(pAssignment->label));
-    printf("[CC]    unit        : %s\n", str16ToCstr(pAssignment->unit));
+    static char buffer [256];
+    buffer[0]=0;
+    if(uMode & CC_MODE_TOGGLE)
+      strcat(buffer, "TOGGLE ");
     
-    // TODO
+    if(uMode & CC_MODE_TRIGGER)
+      strcat(buffer, "TRIGGER ");
+    
+    if(uMode & CC_MODE_OPTIONS)
+      strcat(buffer, "OPTIONS ");
+    
+    if(uMode & CC_MODE_TAP_TEMPO)
+      strcat(buffer, "TAP_TEMPO ");
+
+    if(uMode & CC_MODE_REAL)
+      strcat(buffer, "REAL ");
+
+    if(uMode & CC_MODE_INTEGER)
+      strcat(buffer, "INTEGER ");
+
+    if(uMode & CC_MODE_LOGARITHMIC)
+      strcat(buffer, "LOGARITHMIC ");
+
+    if(uMode & CC_MODE_COLOURED)
+      strcat(buffer, "COLOURED ");
+
+    if(uMode & CC_MODE_MOMENTARY)
+      strcat(buffer, "MOMENTARY ");
+
+    return buffer;
+  }
+
+  void DisplayAssignment(const char *pszLabel, cc_assignment_t *pAssignment, bool bFull)
+  {
+    if(bFull)
+    {
+      printf("[CC]  %s\n", pszLabel);
+      printf("[CC]    id          : %d\n", pAssignment->id);
+      printf("[CC]    actuator_id : %d\n", pAssignment->actuator_id);
+      printf("[CC]    value       : %f\n", pAssignment->value);
+      printf("[CC]    min         : %f\n", pAssignment->min);
+      printf("[CC]    max         : %f\n", pAssignment->max);
+      printf("[CC]    def         : %f\n", pAssignment->def);
+      printf("[CC]    mode        : 0x%x %s\n", pAssignment->mode, modeToCstr(pAssignment->mode));
+      printf("[CC]    steps       : %u\n", pAssignment->steps);
+      printf("[CC]    label       : %s\n", str16ToCstr(pAssignment->label));
+      printf("[CC]    unit        : %s\n", str16ToCstr(pAssignment->unit));
+      printf("[CC]    list_count  : %u\n", pAssignment->list_count);
+      for(int n=0; n < pAssignment->list_count; n++)
+        printf("[CC]      list[%.2d]  : %s = %f\n", n, str16ToCstr(pAssignment->list_items[n]->label), pAssignment->list_items[n]->value);
+      // TODO
       // uint8_t list_index;
       // option_t **list_items;
-  #endif
+    }
+    else
+      printf("[CC]  %s = %d, %d, %f, %f, %f\n", pszLabel, pAssignment->id, pAssignment->actuator_id, pAssignment->min, pAssignment->max, pAssignment->value);
   }
 
   float SetActuatorFromAssignmentValue(int nActuatorId, float fAssignmentValue)
@@ -104,7 +127,7 @@ namespace ControlChain
   // Callbacks
   void AssignmentCB(cc_assignment_t *pAssignment)
   {
-    DisplayAssignment("AssignmentCB", pAssignment);
+    DisplayAssignment("AssignmentCB", pAssignment, true);
 
     actuators[pAssignment->actuator_id].pAssignment = pAssignment;
     float fValue = SetActuatorFromAssignmentValue(pAssignment->actuator_id, pAssignment->value);
@@ -118,7 +141,7 @@ namespace ControlChain
 
   void UpdateCB(cc_assignment_t *pAssignment)
   {
-    DisplayAssignment("UpdateCB", pAssignment);
+    DisplayAssignment("UpdateCB", pAssignment, false);
   }
 
   void SetValueCB(cc_set_value_t *pValue)
@@ -196,52 +219,57 @@ namespace ControlChain
     }
   }
 
+  void CreateActuator(cc_device_t *pDevice, char *pszName, int type, float fMax, float *pValue, uint32_t modes)
+  {
+    cc_actuator_config_t actuator_config;
+    actuator_config.type = type;
+    actuator_config.name = pszName;
+    actuator_config.value = pValue;
+    actuator_config.min = 0.0;
+    actuator_config.max = fMax;
+    actuator_config.supported_modes = modes;
+    actuator_config.max_assignments = 1;
+
+    // create and add actuator to device
+    cc_actuator_t *pActuator = cc_actuator_new(&actuator_config);
+    cc_device_actuator_add(pDevice, pActuator);
+    actuators[nActuatorCount++].pActuator = pActuator;
+  }
+
   void CreateActuators(void)
   {
     // create device
     const char *uri = "https://github.com/moddevices/cc-arduino-lib/tree/master/examples/TestDevice"; // TODO
-    cc_device_t *device = cc_device_new("TestDevice", uri);
+    cc_device_t *pDevice = cc_device_new("TestDevice", uri);
 
-      // configure buttons 
-    for (int i = 0; i < buttonPortsCount; i++) 
+    for (int i = 0; i < continuousActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "Button %d", i+1);
-      //printf("[CC]   Creating Actuator: %s\n", sName);
-      cc_actuator_config_t actuator_config;
-      actuator_config.type = CC_ACTUATOR_MOMENTARY;
-      actuator_config.name = sName;
-      actuator_config.value = &buttonValues[i];
-      actuator_config.min = 0.0;
-      actuator_config.max = 1.0;
-      actuator_config.supported_modes = CC_MODE_TOGGLE | CC_MODE_TRIGGER;
-      actuator_config.max_assignments = 1;
-
-      // create and add actuator to device
-      cc_actuator_t *actuator = cc_actuator_new(&actuator_config);
-      cc_device_actuator_add(device, actuator);
-      actuators[nActuatorCount++].pActuator = actuator;
+      sprintf(sName, "Continuous %d", i+1);
+      CreateActuator(pDevice, sName, CC_ACTUATOR_CONTINUOUS, 1000.0f, &momentaryValues[i], CC_MODE_INTEGER | CC_MODE_REAL);
     }
 
-    for (int i = 0; i < variablePortsCount; i++) 
+    for (int i = 0; i < discreteActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "Variable %d", i+1);
-      //printf("[CC]   Creating Actuator: %s\n", sName);
-      cc_actuator_config_t actuator_config;
-      actuator_config.type = CC_ACTUATOR_CONTINUOUS;
-      actuator_config.name = sName;
-      actuator_config.value = &variableValues[i];
-      actuator_config.min = 0.0;
-      actuator_config.max = 1.0;
-      actuator_config.supported_modes = CC_MODE_REAL | CC_MODE_INTEGER;
-      actuator_config.max_assignments = 1;
-
-      // create and add actuator to device
-      cc_actuator_t *actuator = cc_actuator_new(&actuator_config);
-      cc_device_actuator_add(device, actuator);
-      actuators[nActuatorCount++].pActuator = actuator;
+      sprintf(sName, "Discrete %d", i+1);
+      CreateActuator(pDevice, sName, CC_ACTUATOR_DISCRETE, 1000.0f, &momentaryValues[i], CC_MODE_INTEGER | CC_MODE_REAL || CC_MODE_OPTIONS || CC_MODE_COLOURED);
     }
+
+    for (int i = 0; i < momentaryActuatorCount; i++) 
+    {
+      char sName[40];
+      sprintf(sName, "Momentary %d", i+1);
+      CreateActuator(pDevice, sName, CC_ACTUATOR_MOMENTARY, 1.0f, &momentaryValues[i], CC_MODE_TOGGLE | CC_MODE_TRIGGER | CC_MODE_OPTIONS | CC_MODE_TAP_TEMPO | CC_MODE_COLOURED | CC_MODE_MOMENTARY);
+    }
+
+    for (int i = 0; i < switchActuatorCount; i++) 
+    {
+      char sName[40];
+      sprintf(sName, "Switch %d", i+1);
+      CreateActuator(pDevice, sName, CC_ACTUATOR_SWITCH, 1.0f, &momentaryValues[i], CC_MODE_TOGGLE | CC_MODE_TRIGGER | CC_MODE_OPTIONS | CC_MODE_TAP_TEMPO | CC_MODE_COLOURED | CC_MODE_MOMENTARY);
+    }
+
   }
 
   bool IsInitialised(void)
@@ -253,12 +281,12 @@ namespace ControlChain
   {
     printf("[CC]  ListControls\n");
     std::lock_guard<std::mutex> lock(m_mutex);
-    for(uint32_t uActuator = 0; uActuator < (buttonPortsCount+variablePortsCount); uActuator++)
+    for(uint32_t uActuator = 0; uActuator < (TotalActuatorCount); uActuator++)
     {
       Actuator &act = actuators[uActuator];
       if(act.pAssignment)
       {
-        DisplayAssignment(str16ToCstr(act.pActuator->name), act.pAssignment);
+        DisplayAssignment(str16ToCstr(act.pActuator->name), act.pAssignment, true);
       }
     }
   }
@@ -268,6 +296,7 @@ namespace ControlChain
     printf("[CC]  SetControlValue(%d, %f)\n", nActuatorId, fValue);
     std::lock_guard<std::mutex> lock(m_mutex);
     *(actuators[nActuatorId].pActuator->value) = fValue;
+    cc_process();
   }
 
   void ThreadHandler(void)

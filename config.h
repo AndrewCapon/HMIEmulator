@@ -12,6 +12,8 @@
 #define CC_MAX_ACTUATORS    16
 // maximum number of assignments that can be created per actuator
 #define CC_MAX_ASSIGNMENTS  1
+// maximum number of options items that can be created per device
+#define CC_MAX_OPTIONS_ITEMS 64
 
 // define the size of the queue used to store the updates before send them
 #define CC_UPDATES_FIFO_SIZE    20
