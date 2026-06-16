@@ -123,6 +123,12 @@ namespace ControlChain
     return act.fSetValue;
   } 
 
+  void UnassignAll(void)
+  {
+    printf("[CC]  Unassigning all controls\n");
+    for(Actuator &act : actuators)
+      act.pAssignment = nullptr;
+  }
 
   // Callbacks
   void AssignmentCB(cc_assignment_t *pAssignment)
@@ -196,12 +202,14 @@ namespace ControlChain
       case CC_EV_DEVICE_DISABLED :
       {
         printf("[CC]  Device disabled\n");
+        UnassignAll();
         break;
       }
 
       case CC_EV_MASTER_RESETED :
       {
         printf("[CC]  Device reset\n");
+        UnassignAll();
         break;
       }
 
