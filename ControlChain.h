@@ -136,7 +136,7 @@ namespace ControlChain
 
   void UnassignmentCB(int nActuatorId)
   {
-    printf("[CC] UnassignmentCB(%d)\n", nActuatorId); 
+    printf("[CC]  UnassignmentCB(%d)\n", nActuatorId); 
     actuators[nActuatorId].pAssignment = nullptr;
   }
 
@@ -148,7 +148,7 @@ namespace ControlChain
   void SetValueCB(cc_set_value_t *pValue)
   {
     float fValue = SetActuatorFromAssignmentValue(pValue->actuator_id, pValue->value);
-    printf("[CC] SetValueCB(%d, %d, %f) = %f\n", pValue->assignment_id, pValue->actuator_id, pValue->value, fValue);
+    printf("[CC]  SetValueCB(%d, %d, %f) = %f\n", pValue->assignment_id, pValue->actuator_id, pValue->value, fValue);
   }
 
 
@@ -168,7 +168,7 @@ namespace ControlChain
     {
       case CC_EV_HANDSHAKE_FAILED :
       {
-        printf("[CC] Handshake failed\n");
+        printf("[CC]  Handshake failed\n");
         break;
       }
 
@@ -195,13 +195,13 @@ namespace ControlChain
 
       case CC_EV_DEVICE_DISABLED :
       {
-        printf("[CC] Device disabled\n");
+        printf("[CC]  Device disabled\n");
         break;
       }
 
       case CC_EV_MASTER_RESETED :
       {
-        printf("[CC] Device reset\n");
+        printf("[CC]  Device reset\n");
         break;
       }
 
@@ -214,7 +214,7 @@ namespace ControlChain
 
       default:
       {
-        printf("[CC] Warning unhandled event %d\n", event->id);
+        printf("[CC]  Warning unhandled event %d\n", event->id);
         break;
       }
     }
@@ -246,28 +246,28 @@ namespace ControlChain
     for (int i = 0; i < continuousActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "Continuous %d", i+1);
+      sprintf(sName, "[CC]  Continuous %d", i+1);
       CreateActuator(pDevice, sName, CC_ACTUATOR_CONTINUOUS, 1000.0f, &momentaryValues[i], CC_MODE_INTEGER | CC_MODE_REAL);
     }
 
     for (int i = 0; i < discreteActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "Discrete %d", i+1);
+      sprintf(sName, "[CC]  Discrete %d", i+1);
       CreateActuator(pDevice, sName, CC_ACTUATOR_DISCRETE, 1000.0f, &momentaryValues[i], CC_MODE_INTEGER | CC_MODE_REAL || CC_MODE_OPTIONS || CC_MODE_COLOURED);
     }
 
     for (int i = 0; i < momentaryActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "Momentary %d", i+1);
+      sprintf(sName, "[CC]  Momentary %d", i+1);
       CreateActuator(pDevice, sName, CC_ACTUATOR_MOMENTARY, 1.0f, &momentaryValues[i], CC_MODE_TOGGLE | CC_MODE_TRIGGER | CC_MODE_OPTIONS | CC_MODE_TAP_TEMPO | CC_MODE_COLOURED | CC_MODE_MOMENTARY);
     }
 
     for (int i = 0; i < switchActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "Switch %d", i+1);
+      sprintf(sName, "[CC]  Switch %d", i+1);
       CreateActuator(pDevice, sName, CC_ACTUATOR_SWITCH, 1.0f, &momentaryValues[i], CC_MODE_TOGGLE | CC_MODE_TRIGGER | CC_MODE_OPTIONS | CC_MODE_TAP_TEMPO | CC_MODE_COLOURED | CC_MODE_MOMENTARY);
     }
 
