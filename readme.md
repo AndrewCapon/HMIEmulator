@@ -42,6 +42,7 @@ the code listens on /dev/tnt3 for HMI serial messages.
 
 ## Usage
 
+```
 Console commands (need newline, n=int, f=float):
   <empty> : Display help.
   hv      : HMI verbose switch (unsupported commands and pings).
@@ -52,6 +53,7 @@ Console commands (need newline, n=int, f=float):
   cs n f  : CC  Set actuator n to f.
 
   ct n    : CC  Toggle actuator n from 1 to 0.
+```
 
 ## cc-slave
 
