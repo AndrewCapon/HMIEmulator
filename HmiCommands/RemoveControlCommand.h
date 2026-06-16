@@ -16,7 +16,7 @@ public:
 
   bool Process(Tokenizer::TokenVector tokens)
   {
-    printf("[HMI] AddCommand\n");
+    printf("[HMI] RemoveCommand\n");
     m_controlCollection.Remove(static_cast<int>(tokens[1]));
     SendResponse();
     return true;
