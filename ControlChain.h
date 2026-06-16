@@ -136,6 +136,7 @@ namespace ControlChain
 
   void UnassignmentCB(int nActuatorId)
   {
+    printf("[CC] UnassignmentCB(%d)\n", nActuatorId); 
     actuators[nActuatorId].pAssignment = nullptr;
   }
 
@@ -147,7 +148,7 @@ namespace ControlChain
   void SetValueCB(cc_set_value_t *pValue)
   {
     float fValue = SetActuatorFromAssignmentValue(pValue->actuator_id, pValue->value);
-    printf("[CC] SetValueCB (%d, %d, %f) = %f\n", pValue->assignment_id, pValue->actuator_id, pValue->value, fValue);
+    printf("[CC] SetValueCB(%d, %d, %f) = %f\n", pValue->assignment_id, pValue->actuator_id, pValue->value, fValue);
   }
 
 
