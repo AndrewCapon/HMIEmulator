@@ -6,6 +6,7 @@ You need tty0tty installed: https://github.com/freemed/tty0tty
 
 It uses two pairs of serial devices: `/dev/tnt0 <-> /dev/tnt1` for ControlChain and `/dev/tnt2 <-> /dev/tnt3` for HMI.
 
+
 ## Setup for Control chain
 
 code listens on /dev/tnt1 for Control Change serial
@@ -23,6 +24,19 @@ mod-ui needs two env vars set:
 `MOD_HARDWARE_DESC_FILE=./mod-hardware-descriptor.json`
 
 `MOD_HARDWARE_DESC_FILE` is the location for the json file to use for HMI setup to emulate, one is included here for the Mod Dwarf.
+
+## Usage
+
+Console commands (need newline, n=int, f=float):
+  <empty> : Display help.
+  hv      : HMI verbose switch (unsupported commands and pings).
+  hl      : HMI List controls.
+  hs n f  : HMI Set control n to f.
+
+  cl      : CC  List controls.
+  cs n f  : CC  Set actuator n to f.
+
+  ct n    : CC  Toggle actuator n from 1 to 0.
 
 ## cc-slave
 
