@@ -2,6 +2,22 @@
 
 Emulator for testing mod-ui and mod-host with Control Chain and HMI.
 
+The code has been knocked together quickly, there is very little error checking.
+
+Basically allows you to run the Mod web interface and make it think it as a HMI conncted and a control chain device.
+
+The functionality is very simple:
+
+1. Allows you to start mod-ui on linux and make it think it has a HMI an CC dvice attached.
+2. Allows you to see the messages sent to HMI/CC concerning controls.
+3. Allows you to set control values as if they were coming from the HMI or CC.
+
+The Control Chain device device is currently is set up for 4 momentary switches and 4 continuous controls.
+
+I'm using the Mod Dwarf device description for the HMI.
+
+## Prerequisites
+
 You need tty0tty installed: https://github.com/freemed/tty0tty
 
 It uses two pairs of serial devices: `/dev/tnt0 <-> /dev/tnt1` for ControlChain and `/dev/tnt2 <-> /dev/tnt3` for HMI.
@@ -9,17 +25,16 @@ It uses two pairs of serial devices: `/dev/tnt0 <-> /dev/tnt1` for ControlChain 
 
 ## Setup for Control chain
 
-code listens on /dev/tnt1 for Control Change serial
+The code listens on /dev/tnt1 for Control Change serial messages.
 
-controlchaind should be started use `/dev/tnt0` for example : `LIBCONTROLCHAIN_DEBUG=2 ./controlchaind /dev/tnt0 -f` 
-The code currently is set up for 4 momentary switches and variable controls.
+`controlchaind` should be started use `/dev/tnt0` for example : `LIBCONTROLCHAIN_DEBUG=2 ./controlchaind /dev/tnt0 -f` 
 
 
 ## Setup for HMI
 
-code listens on /dev/tnt3 for HMI serial
+the code listens on /dev/tnt3 for HMI serial messages.
 
-mod-ui needs two env vars set:
+`mod-ui` needs two env vars set:
 `MOD_HMI_SERIAL_PORT=/dev/tnt2`
 `MOD_HARDWARE_DESC_FILE=./mod-hardware-descriptor.json`
 
