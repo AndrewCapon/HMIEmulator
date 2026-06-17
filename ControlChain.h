@@ -254,28 +254,28 @@ namespace ControlChain
     for (int i = 0; i < continuousActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "[CC]  Continuous %d", i+1);
+      sprintf(sName, "Continuous %d", i+1);
       CreateActuator(pDevice, sName, CC_ACTUATOR_CONTINUOUS, 1000.0f, &momentaryValues[i], CC_MODE_INTEGER | CC_MODE_REAL);
     }
 
     for (int i = 0; i < discreteActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "[CC]  Discrete %d", i+1);
+      sprintf(sName, "Discrete %d", i+1);
       CreateActuator(pDevice, sName, CC_ACTUATOR_DISCRETE, 1000.0f, &momentaryValues[i], CC_MODE_INTEGER | CC_MODE_REAL || CC_MODE_OPTIONS || CC_MODE_COLOURED);
     }
 
     for (int i = 0; i < momentaryActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "[CC]  Momentary %d", i+1);
+      sprintf(sName, "Momentary %d", i+1);
       CreateActuator(pDevice, sName, CC_ACTUATOR_MOMENTARY, 1.0f, &momentaryValues[i], CC_MODE_TOGGLE | CC_MODE_TRIGGER | CC_MODE_OPTIONS | CC_MODE_TAP_TEMPO | CC_MODE_COLOURED | CC_MODE_MOMENTARY);
     }
 
     for (int i = 0; i < switchActuatorCount; i++) 
     {
       char sName[40];
-      sprintf(sName, "[CC]  Switch %d", i+1);
+      sprintf(sName, "Switch %d", i+1);
       CreateActuator(pDevice, sName, CC_ACTUATOR_SWITCH, 1.0f, &momentaryValues[i], CC_MODE_TOGGLE | CC_MODE_TRIGGER | CC_MODE_OPTIONS | CC_MODE_TAP_TEMPO | CC_MODE_COLOURED | CC_MODE_MOMENTARY);
     }
 
